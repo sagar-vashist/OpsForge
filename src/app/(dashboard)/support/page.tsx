@@ -34,7 +34,7 @@ export default function SupportPage() {
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" /> Email Support
             </CardTitle>
-            <CardDescription>Send us an email and we'll get back to you.</CardDescription>
+            <CardDescription>Send us an email and we&apos;ll get back to you.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">We typically respond to all email inquiries within 24 hours.</p>
