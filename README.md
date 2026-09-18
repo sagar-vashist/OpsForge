@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# OpsForge
 
-## Getting Started
+OpsForge is a modern internal software and project operations platform built for enterprise management of projects, teams, tasks, issues, and deadlines. 
 
-First, run the development server:
+## Features
+- **Authentication**: Secure login and registration powered by Supabase Auth.
+- **Role-Based Access Control (RBAC)**: Admin, Project Manager, Developer, and Employee roles.
+- **Project Management**: Track projects with statuses, priorities, and assigned teams.
+- **Task & Kanban Board**: Drag-and-drop Kanban interface for task management.
+- **Issue Tracking**: Jira-style issue reporting and resolution.
+- **Analytics**: Visualize task completion and project metrics with Recharts.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
+- **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS
+- **Components**: shadcn/ui, Lucide Icons, Recharts
+- **Backend/Database**: PostgreSQL via Supabase (Row Level Security enabled)
+- **Forms & Validation**: React Hook Form, Zod
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository** (if applicable) or navigate to the directory.
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Configure Environment Variables**:
+   Copy `.env.example` to `.env.local` and add your Supabase credentials.
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
+4. **Setup Database**:
+   - Create a project on [Supabase](https://supabase.com).
+   - Go to the SQL Editor and run the script found in `supabase/migrations/0000_initial_schema.sql`.
+   - To add demo data, optionally run `supabase/migrations/0001_seed_data.sql`.
+5. **Run the Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Deployment (Vercel)
 
-## Learn More
+This Next.js application is ready to be deployed on Vercel.
+1. Push the code to a GitHub repository.
+2. Import the project in Vercel.
+3. Add the `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the Vercel Environment Variables.
+4. Deploy!
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Screenshots / Structure
+The application follows a scalable standard structure:
+- `app/`: Next.js App Router pages and layouts.
+- `components/ui/`: shadcn/ui reusable components.
+- `components/layout/`: Sidebar and Header.
+- `components/dashboard/`, `components/kanban/`: Feature specific components.
+- `lib/`: Utilities and Supabase SSR clients.
