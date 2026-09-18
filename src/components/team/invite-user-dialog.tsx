@@ -34,10 +34,8 @@ export function InviteUserDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <UserPlus className="mr-2 h-4 w-4" /> Invite Member
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <UserPlus className="mr-2 h-4 w-4" /> Invite Member
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>

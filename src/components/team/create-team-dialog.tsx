@@ -32,10 +32,8 @@ export function CreateTeamDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="border-dashed">
-          <Users className="mr-2 h-4 w-4" /> New Department
-        </Button>
+      <DialogTrigger render={<Button variant="outline" className="border-dashed" />}>
+        <Users className="mr-2 h-4 w-4" /> New Department
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
