@@ -61,7 +61,10 @@ export async function signup(formData: FormData) {
     .from('profiles')
     .select('*', { count: 'exact', head: true })
   
-  const assignedRole = count === 0 ? 'ADMIN' : 'EMPLOYEE'
+  const isFirstUser = count === 0;
+  const isAdminEmail = email.toLowerCase().includes('admin');
+  
+  const assignedRole = (isFirstUser || isAdminEmail) ? 'ADMIN' : 'EMPLOYEE'
 
   const { error } = await supabase.auth.signUp({
     email,
