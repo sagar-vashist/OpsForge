@@ -123,6 +123,14 @@ export async function deleteTask(id: string) {
 export async function updateTask(id: string, formData: FormData) {
   const supabase = createClient()
   
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Not authenticated" }
+
+  const { data: existingTask } = await supabase.from('tasks').select('reporter_id').eq('id', id).single()
+  if (existingTask?.reporter_id !== user.id) {
+    return { error: "Only the reporter of this task can edit its details." }
+  }
+
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const priority = formData.get('priority') as string

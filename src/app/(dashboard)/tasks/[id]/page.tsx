@@ -18,7 +18,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
   const { data: { user } } = await supabase.auth.getUser()
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
   
-  const canEdit = user && (profile?.role === 'ADMIN' || profile?.role === 'PROJECT_MANAGER' || task.reporter_id === user.id || task.assignee_id === user.id)
+  const canEdit = user && task.reporter_id === user.id
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">

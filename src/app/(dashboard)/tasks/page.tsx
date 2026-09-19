@@ -20,8 +20,7 @@ export default async function TasksPage() {
   
   const canEdit = (task: any) => {
     if (!user) return false;
-    if (profile?.role === 'ADMIN' || profile?.role === 'PROJECT_MANAGER') return true;
-    return task.reporter_id === user.id || task.assignee_id === user.id;
+    return task.reporter_id === user.id;
   }
 
   let tasks: any[] = []
