@@ -1,6 +1,7 @@
+import { createClient } from '@/lib/supabase/server'
 import { getTasks, deleteTask } from '@/app/actions/tasks'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Edit } from 'lucide-react'
 import Link from 'next/link'
 import {
   Table,
@@ -13,6 +14,16 @@ import {
 import { Badge } from '@/components/ui/badge'
 
 export default async function TasksPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  
+  const canEdit = (task: any) => {
+    if (!user) return false;
+    if (profile?.role === 'ADMIN' || profile?.role === 'PROJECT_MANAGER') return true;
+    return task.reporter_id === user.id || task.assignee_id === user.id;
+  }
+
   let tasks: any[] = []
   try {
     tasks = await getTasks()
@@ -39,6 +50,7 @@ export default async function TasksPage() {
               <TableHead className="text-white font-bold">Project</TableHead>
               <TableHead className="text-white font-bold">Status</TableHead>
               <TableHead className="text-white font-bold">Priority</TableHead>
+              <TableHead className="text-white font-bold">Reporter</TableHead>
               <TableHead className="text-white font-bold">Assignee</TableHead>
               <TableHead className="text-white font-bold text-right">Actions</TableHead>
             </TableRow>
@@ -46,7 +58,7 @@ export default async function TasksPage() {
           <TableBody>
             {tasks?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
                   No tasks found. Create one to get started.
                 </TableCell>
               </TableRow>
@@ -70,6 +82,9 @@ export default async function TasksPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    {task.reporter ? `${task.reporter.first_name} ${task.reporter.last_name}` : 'System'}
+                  </TableCell>
+                  <TableCell>
                     {task.assignee ? `${task.assignee.first_name} ${task.assignee.last_name}` : 'Unassigned'}
                   </TableCell>
                   <TableCell className="text-right">
@@ -77,6 +92,11 @@ export default async function TasksPage() {
                       <Link href={`/tasks/${task.id}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
                         View
                       </Link>
+                      {canEdit(task) && (
+                        <Link href={`/tasks/${task.id}/edit`} className={buttonVariants({ variant: "ghost", size: "icon", className: "h-8 w-8" })} title="Edit Task">
+                          <Edit className="h-4 w-4 text-muted-foreground" />
+                        </Link>
+                      )}
                       {task.status === 'COMPLETED' && (
                         <form action={async () => {
                           'use server'

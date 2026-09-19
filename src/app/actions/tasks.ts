@@ -11,7 +11,8 @@ export async function getTasks(projectId?: string) {
     .select(`
       *,
       project:projects!project_id(name, project_code),
-      assignee:profiles!assignee_id(first_name, last_name, avatar_url)
+      assignee:profiles!assignee_id(first_name, last_name, avatar_url),
+      reporter:profiles!reporter_id(first_name, last_name, avatar_url)
     `)
     .order('created_at', { ascending: false })
 
@@ -116,5 +117,36 @@ export async function deleteTask(id: string) {
 
   revalidatePath('/tasks')
   revalidatePath('/kanban')
+  return { success: true }
+}
+
+export async function updateTask(id: string, formData: FormData) {
+  const supabase = createClient()
+  
+  const title = formData.get('title') as string
+  const description = formData.get('description') as string
+  const priority = formData.get('priority') as string
+  const projectId = formData.get('projectId') as string
+  const assigneeId = formData.get('assigneeId') as string
+  const status = formData.get('status') as string
+
+  const { error } = await supabase.from('tasks').update({
+    title,
+    description,
+    priority,
+    project_id: projectId,
+    assignee_id: assigneeId || null,
+    status
+  }).eq('id', id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  await logActivity('Task Updated', `Task "${title}" was updated.`)
+
+  revalidatePath('/tasks')
+  revalidatePath('/kanban')
+  revalidatePath(`/tasks/${id}`)
   return { success: true }
 }

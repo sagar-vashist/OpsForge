@@ -13,6 +13,13 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
     notFound()
   }
 
+  const { createClient } = await import('@/lib/supabase/server')
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  
+  const canEdit = user && (profile?.role === 'ADMIN' || profile?.role === 'PROJECT_MANAGER' || task.reporter_id === user.id || task.assignee_id === user.id)
+
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
@@ -46,6 +53,11 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
                 Delete Task
               </Button>
             </form>
+          )}
+          {canEdit && (
+            <Link href={`/tasks/${task.id}/edit`} className={buttonVariants({ variant: "outline" })}>
+              Edit Task
+            </Link>
           )}
           <Link href={`/kanban?project=${task.project_id || ''}`} className={buttonVariants({ variant: "outline" })}>
             View on Board
