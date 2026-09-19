@@ -14,7 +14,7 @@ export function AssignProjectDropdown({ userId, availableProjects }: { userId: s
     <Select 
       key={key}
       value={undefined}
-      onValueChange={(projectId: string | null) => {
+      onValueChange={(projectId) => {
         if (!projectId) return;
         startTransition(async () => {
           await assignUserToProject(userId, projectId)

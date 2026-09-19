@@ -14,7 +14,7 @@ export function AssignTeamDropdown({ userId, availableTeams }: { userId: string,
     <Select 
       key={key} 
       value={undefined}
-      onValueChange={(teamId: string | null) => {
+      onValueChange={(teamId) => {
         if (!teamId) return;
         startTransition(async () => {
           await assignUserToTeam(userId, teamId)
