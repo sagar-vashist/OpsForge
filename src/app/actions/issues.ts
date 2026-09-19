@@ -51,6 +51,14 @@ export async function getIssue(id: string) {
 
 export async function deleteIssue(id: string) {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Not authenticated" }
+
+  const { data: existingIssue } = await supabase.from('issues').select('reporter_id, assignee_id').eq('id', id).single()
+  if (existingIssue?.reporter_id !== user.id && existingIssue?.assignee_id !== user.id) {
+    return { error: "Only the reporter and assignee can delete this issue." }
+  }
+
   const { error } = await supabase.from('issues').delete().eq('id', id)
   
   if (error) {
@@ -65,11 +73,16 @@ export async function deleteIssue(id: string) {
 
 export async function updateIssueStatus(id: string, status: string) {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Not authenticated" }
   
-  const { data: issue } = await supabase.from('issues').select('title').eq('id', id).single()
+  const { data: issue } = await supabase.from('issues').select('title, reporter_id, assignee_id').eq('id', id).single()
 
-  const { error } = await supabase
-    .from('issues')
+  if (status === 'RESOLVED' && issue?.reporter_id !== user.id && issue?.assignee_id !== user.id) {
+    return { error: "Only the reporter and assignee can mark this issue as resolved." }
+  }
+
+  const { error } = await supabase.from('issues')
     .update({ status })
     .eq('id', id)
 

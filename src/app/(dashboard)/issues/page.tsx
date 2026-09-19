@@ -1,3 +1,4 @@
+import { createClient } from '@/lib/supabase/server'
 import { getIssues, deleteIssue } from '@/app/actions/issues'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Plus, X, Check } from 'lucide-react'
@@ -13,6 +14,14 @@ import {
 import { Badge } from '@/components/ui/badge'
 
 export default async function IssuesPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const canManage = (issue: any) => {
+    if (!user) return false;
+    return issue.reporter_id === user.id || issue.assignee_id === user.id;
+  }
+
   let issues: any[] = []
   try {
     issues = await getIssues()
@@ -47,7 +56,7 @@ export default async function IssuesPage() {
           <TableBody>
             {issues?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
                   No issues found.
                 </TableCell>
               </TableRow>
@@ -81,7 +90,7 @@ export default async function IssuesPage() {
                       <Link href={`/issues/${issue.id}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
                         View
                       </Link>
-                      {issue.status !== 'RESOLVED' && (
+                      {issue.status !== 'RESOLVED' && canManage(issue) && (
                         <form action={async () => {
                           'use server'
                           const { updateIssueStatus } = await import('@/app/actions/issues')
@@ -92,7 +101,7 @@ export default async function IssuesPage() {
                           </Button>
                         </form>
                       )}
-                      {issue.status === 'RESOLVED' && (
+                      {issue.status === 'RESOLVED' && canManage(issue) && (
                         <form action={async () => {
                           'use server'
                           await deleteIssue(issue.id)

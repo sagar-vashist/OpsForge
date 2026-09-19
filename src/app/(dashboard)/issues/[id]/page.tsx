@@ -13,6 +13,11 @@ export default async function IssueDetailsPage({ params }: { params: { id: strin
     notFound()
   }
 
+  const { createClient } = await import('@/lib/supabase/server')
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const canManage = user && (issue.reporter_id === user.id || issue.assignee_id === user.id)
+
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
@@ -34,7 +39,7 @@ export default async function IssueDetailsPage({ params }: { params: { id: strin
           )}
         </div>
         <div className="flex items-center space-x-2">
-          {issue.status !== 'RESOLVED' && (
+          {issue.status !== 'RESOLVED' && canManage && (
             <form action={async () => {
               'use server'
               const { updateIssueStatus } = await import('@/app/actions/issues')
@@ -45,7 +50,7 @@ export default async function IssueDetailsPage({ params }: { params: { id: strin
               </Button>
             </form>
           )}
-          {issue.status === 'RESOLVED' && (
+          {issue.status === 'RESOLVED' && canManage && (
             <form action={async () => {
               'use server'
               const { deleteIssue } = await import('@/app/actions/issues')
