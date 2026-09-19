@@ -1,7 +1,7 @@
 'use client'
 
 import { Bell, Menu, Search, User, Briefcase } from 'lucide-react'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
