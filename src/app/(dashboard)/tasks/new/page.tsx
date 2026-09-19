@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { redirect } from 'next/navigation'
 
-export default async function NewTaskPage() {
+export default async function NewTaskPage({ searchParams }: { searchParams: { error?: string } }) {
   const projects = await getProjects()
   const members = await getTeamMembers()
 
   async function handleCreateTask(formData: FormData) {
     'use server'
-    await createTask(formData)
+    const result = await createTask(formData)
+    if (result?.error) {
+      redirect(`/tasks/new?error=${encodeURIComponent(result.error)}`)
+    }
     redirect('/tasks')
   }
 
@@ -22,6 +25,12 @@ export default async function NewTaskPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Create New Task</h2>
       </div>
+
+      {searchParams?.error && (
+        <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm border border-destructive/50">
+          <strong>Error creating task:</strong> {searchParams.error}
+        </div>
+      )}
       
       <Card>
         <CardHeader>

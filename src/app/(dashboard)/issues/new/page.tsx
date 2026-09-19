@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { redirect } from 'next/navigation'
 
-export default async function NewIssuePage() {
+export default async function NewIssuePage({ searchParams }: { searchParams: { error?: string } }) {
   const projects = await getProjects()
   const members = await getTeamMembers()
 
   async function handleCreateIssue(formData: FormData) {
     'use server'
-    await createIssue(formData)
+    const result = await createIssue(formData)
+    if (result?.error) {
+      redirect(`/issues/new?error=${encodeURIComponent(result.error)}`)
+    }
     redirect('/issues')
   }
 
@@ -22,6 +25,12 @@ export default async function NewIssuePage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Report New Issue</h2>
       </div>
+
+      {searchParams?.error && (
+        <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm border border-destructive/50">
+          <strong>Error creating issue:</strong> {searchParams.error}
+        </div>
+      )}
       
       <Card>
         <CardHeader>
