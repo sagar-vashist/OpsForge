@@ -13,7 +13,7 @@ export function AssignProjectDropdown({ userId, availableProjects }: { userId: s
   return (
     <Select 
       key={key}
-      defaultValue="unassigned"
+      value={undefined}
       onValueChange={(projectId: string | null) => {
         if (!projectId) return;
         startTransition(async () => {

@@ -13,7 +13,7 @@ export function AssignTeamDropdown({ userId, availableTeams }: { userId: string,
   return (
     <Select 
       key={key} 
-      defaultValue="unassigned"
+      value={undefined}
       onValueChange={(teamId: string | null) => {
         if (!teamId) return;
         startTransition(async () => {
