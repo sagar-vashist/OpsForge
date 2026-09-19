@@ -56,6 +56,13 @@ export async function signup(formData: FormData) {
 
   const supabase = createClient()
 
+  // Determine if this is the first user in the database
+  const { count, error: countError } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+  
+  const assignedRole = count === 0 ? 'ADMIN' : 'EMPLOYEE'
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -63,7 +70,7 @@ export async function signup(formData: FormData) {
       data: {
         first_name: firstName,
         last_name: lastName,
-        role: 'ADMIN',
+        role: assignedRole,
       },
     },
   })
