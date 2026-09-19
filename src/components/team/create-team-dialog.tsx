@@ -25,7 +25,10 @@ export function CreateTeamDialog() {
     e.preventDefault()
     setLoading(true)
     const formData = new FormData(e.currentTarget)
-    await createTeam(formData.get('name') as string, formData.get('description') as string)
+    const result = await createTeam(formData.get('name') as string, formData.get('description') as string)
+    if (result.error) {
+      alert('Error creating team: ' + result.error)
+    }
     setLoading(false)
     setOpen(false)
   }
